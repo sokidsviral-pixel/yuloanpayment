@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>পেমেন্ট — চেকআউট</title>
+<style>
+  :root {
+    --bg-color: #f4f5f7;
+    --card-bg: #ffffff;
+    --text-main: #333333;
+    --border-color: #e0e0e0;
+    --btn-disabled: #d6d6d6;
+    --btn-disabled-text: #ffffff;
+    --badge-bg: #fff1f0;
+    --badge-text: #e53935;
+    
+    /* Header Fixed Color */
+    --top-header-bg: #1b7a3e;
+
+    /* Payment Brand Colors */
+    --bkash-color: #e2136e;
+    --nagad-color: #f7921e;
+    --active-theme: var(--bkash-color);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    font-family: "Segoe UI", "Noto Sans Bengali", Arial, sans-serif;
+    background-color: var(--bg-color);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0 0 40px 0;
+    color: var(--text-main);
+    min-height: 100vh;
+  }
+
+  /* Responsive Top Header */
+  .top-header {
+    width: 100%;
+    max-width: 480px;
+    background-color: var(--top-header-bg);
+    color: #ffffff;
+    text-align: center;
+    padding: 24px 16px 20px 16px;
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    transition: all 0.3s ease;
+  }
+
+  .top-header .order-id {
+    font-size: 15px;
+    font-weight: 500;
+    opacity: 0.95;
+    margin-bottom: 6px;
+  }
+
+  .top-header .order-amount {
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  /* Main Container */
+  .container {
+    width: 100%;
+    max-width: 480px;
+    padding: 16px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    margin-bottom: 16px;
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-header h2 {
+    font-size: 16px;
+    margin: 0;
+    font-weight: 600;
+    color: #444;
+  }
+
+  .lang-switch {
+    font-size: 12px;
+    background: #f0f0f0;
+    padding: 4px 10px;
+    border-radius: 12px;
+    color: #666;
+  }
+
+  /* Dropdown Selector */
+  .select-box {
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    background: #fff;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .select-current {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+  }
+
+  .method-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .radio-icon {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 5px solid var(--active-theme);
+    background: #fff;
+    transition: border-color 0.3s ease;
+  }
+
+  .dropdown-arrow {
+    font-size: 12px;
+    color: #777;
+    transition: transform 0.2s ease;
+  }
+
+  .select-box.open .dropdown-arrow {
+    transform: rotate(180deg);
+  }
+
+  .select-options {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    margin-top: 4px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    z-index: 10;
+    overflow: hidden;
+  }
+
+  .select-box.open .select-options {
+    display: block;
+  }
+
+  .option-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    transition: background 0.2s;
+  }
+
+  .option-item:hover {
+    background: #f9f9f9;
+  }
+
+  /* Steps Section */
+  .sub-heading-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 18px 0 14px 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .sub-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #222;
+  }
+
+  .info-badge {
+    font-size: 12px;
+    color: var(--badge-text);
+    background: var(--badge-bg);
+    padding: 4px 10px;
+    border-radius: 12px;
+    text-decoration: none;
+  }
+
+  .step-item {
+    margin-bottom: 18px;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+
+  .step-number {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid var(--active-theme);
+    color: var(--active-theme);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    flex-shrink: 0;
+    margin-top: 2px;
+    transition: all 0.3s ease;
+  }
+
+  .step-text {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: #333;
+    line-height: 1.4;
+  }
+
+  /* Account Card */
+  .account-box {
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    gap: 10px;
+  }
+
+  .account-details {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .wallet-icon {
+    width: 22px;
+    height: 22px;
+    opacity: 0.6;
+    flex-shrink: 0;
+  }
+
+  .account-num-wrap .label {
+    font-size: 11px;
+    color: #888;
+  }
+
+  .account-num-wrap .number {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111;
+  }
+
+  .copy-btn {
+    background: var(--active-theme);
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.3s ease;
+  }
+
+  .hint-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fdf2f2;
+    color: #e53935;
+    font-size: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    margin-top: 8px;
+  }
+
+  /* Input & Button */
+  .input-box {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    color: #333;
+    margin-top: 6px;
+    transition: border-color 0.3s ease;
+  }
+
+  .input-box:focus {
+    border-color: var(--active-theme);
+  }
+
+  .error-text {
+    font-size: 12px;
+    color: #e53935;
+    margin-top: 4px;
+    display: none;
+    font-weight: 600;
+  }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--btn-disabled);
+    color: var(--btn-disabled-text);
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: not-allowed;
+    margin-top: 16px;
+    transition: background 0.3s ease;
+  }
+
+  .submit-btn.active {
+    background: var(--active-theme);
+    cursor: pointer;
+  }
+
+  .status-message {
+    margin-top: 14px;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+  }
+
+  .status-message.success {
+    display: block;
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+  }
+
+  .footer-notice {
+    font-size: 11.5px;
+    color: #666;
+    text-align: left;
+    line-height: 1.6;
+    padding: 0 10px;
+  }
+
+  .footer-notice p {
+    margin: 6px 0;
+  }
+
+  /* Modal Styles */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    padding: 16px;
+  }
+
+  .modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .modal-card {
+    background: #1b7a3e;
+    color: #ffffff;
+    width: 100%;
+    max-width: 400px;
+    border-radius: 16px;
+    padding: 28px 20px;
+    text-align: center;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    transform: translateY(20px);
+    transition: transform 0.3s ease;
+  }
+
+  .modal-overlay.active .modal-card {
+    transform: translateY(0);
+  }
+
+  .success-icon-circle {
+    width: 50px;
+    height: 50px;
+    border: 2px solid #ffffff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px auto;
+    font-size: 24px;
+  }
+
+  .modal-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 12px;
+  }
+
+  .modal-desc {
+    font-size: 13px;
+    line-height: 1.5;
+    opacity: 0.95;
+    margin-bottom: 24px;
+  }
+
+  .modal-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: 14px;
+  }
+
+  .modal-row-label {
+    opacity: 0.9;
+  }
+
+  .modal-row-value {
+    font-weight: 700;
+  }
+
+  @media (min-width: 600px) {
+    body {
+      padding-top: 40px;
+    }
+
+    .top-header {
+      border-radius: 20px 20px 0 0;
+    }
+
+    .card {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+  }
+</style>
+</head>
+<body>
+
+  <!-- Fixed Top Header -->
+  <div class="top-header" id="topHeader">
+    <div class="order-id">অর্ডার আইডি: 939364039567574748</div>
+    <div class="order-amount">৳ 1,000.00</div>
+  </div>
+
+  <div class="container">
+    <div class="card">
+      <div class="card-header">
+        <h2>পেমেন্ট চ্যানেল</h2>
+        <span class="lang-switch">বাং | EN</span>
+      </div>
+
+      <!-- Payment Method Dropdown -->
+      <div class="select-box" id="paymentDropdown">
+        <div class="select-current" onclick="toggleDropdown()">
+          <div class="method-info">
+            <span class="radio-icon"></span>
+            <span class="method-name" id="selectedName">bKash</span>
+          </div>
+          <span class="dropdown-arrow">▼</span>
+        </div>
+        <div class="select-options">
+          <div class="option-item" onclick="selectMethod('bkash', 'bKash', '01849992657')">
+            <span class="method-name">bKash</span>
+          </div>
+          <div class="option-item" onclick="selectMethod('nagad', 'Nagad', '01849992657')">
+            <span class="method-name">Nagad</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="sub-heading-row">
+        <span class="sub-title">শুধু ২টি ধাপে, পেমেন্ট সম্পন্ন করুন।</span>
+        <a href="#" class="info-badge">বিস্তারিত ব্যাখ্যা &gt;</a>
+      </div>
+
+      <!-- Step 1 -->
+      <div class="step-item">
+        <div class="step-header">
+          <span class="step-number">1</span>
+          <span class="step-text" id="step1Text">এই bKash নাম্বার শুধুমাত্র পেমেন্ট গ্রহণ করা হয়</span>
+        </div>
+        
+        <div class="account-box">
+          <div class="account-details">
+            <svg class="wallet-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+            </svg>
+            <div class="account-num-wrap">
+              <div class="label">Wallet No*</div>
+              <div class="number" id="walletNumber">01849992657</div>
+            </div>
+          </div>
+          <button class="copy-btn" onclick="copyWallet()">কপি</button>
+        </div>
+
+        <div class="hint-pill">
+          <span>'সেন্ড মানি' দিয়ে পরিশোধ করুন</span>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="step-item">
+        <div class="step-header">
+          <span class="step-number">2</span>
+          <span class="step-text">সেন্ড মানির TrxID নাম্বার লিখুন (প্রয়োজন)</span>
+        </div>
+
+        <input type="text" id="trxInput" class="input-box" placeholder="TrxID অবশ্যই প্রদান করতে হবে!" oninput="validateInput()">
+        <div id="errorText" class="error-text">ভুল TrxID! সঠিক TrxID প্রদান করুন।</div>
+        
+        <button id="submitBtn" class="submit-btn" disabled onclick="processPayment()">জমা দিন</button>
+        
+        <div id="statusMsg" class="status-message"></div>
+      </div>
+    </div>
+
+    <div class="footer-notice">
+      <p>পেমেন্ট সম্পন্ন করার পর প্রাপ্ত ট্রানজেকশন আইডি সঠিকভাবে উপরের ফর্মে লিখুন।</p>
+      <p>জমাকৃত তথ্য পর্যালোচনার পর যাচাই করা হবে। যাচাই সম্পন্ন না হওয়া পর্যন্ত এটি "পর্যালোচনাধীন" হিসেবে দেখানো হবে।</p>
+      <p>ভুল তথ্য প্রদান করলে যাচাই প্রক্রিয়া বিলম্বিত হতে পারে।</p>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-overlay" id="successModal">
+    <div class="modal-card">
+      <div class="success-icon-circle">✓</div>
+      <div class="modal-title">পেমেন্ট সফল হয়েছে</div>
+      <div class="modal-desc">
+        আপনি পেমেন্ট সম্পন্ন করেছেন, অনুগ্রহ করে আবার বিক্রেতার কাছে ফিরে গিয়ে নিশ্চিত করুন।
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">পেমেন্টের পরিমাণ</span>
+        <span class="modal-row-value">৳  1,000.00</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-row-label">পেমেন্ট চ্যানেল</span>
+        <span class="modal-row-value" id="modalChannel">bKash</span>
+      </div>
+    </div>
+  </div>
+
+<script>
+  let currentMethod = 'bkash';
+
+  function toggleDropdown() {
+    document.getElementById('paymentDropdown').classList.toggle('open');
+  }
+
+  function selectMethod(method, name, number) {
+    currentMethod = method;
+    document.getElementById('selectedName').textContent = name;
+    document.getElementById('walletNumber').textContent = number;
+    document.getElementById('step1Text').textContent = `এই ${name} নাম্বার শুধুমাত্র সেন্ড মানি গ্রহণ করা হয়`;
+    document.getElementById('paymentDropdown').classList.remove('open');
+    
+    // Switch Theme Color
+    const root = document.documentElement;
+    if (method === 'bkash') {
+      root.style.setProperty('--active-theme', 'var(--bkash-color)');
+    } else if (method === 'nagad') {
+      root.style.setProperty('--active-theme', 'var(--nagad-color)');
+    }
+
+    // Reset input & status
+    document.getElementById('trxInput').value = '';
+    document.getElementById('errorText').style.display = 'none';
+    document.getElementById('statusMsg').className = 'status-message';
+    validateInput();
+  }
+
+  function copyWallet() {
+    const num = document.getElementById('walletNumber').textContent;
+    navigator.clipboard.writeText(num);
+    alert('কপি করা হয়েছে!');
+  }
+
+  function validateInput() {
+    const val = document.getElementById('trxInput').value.trim();
+    const submitBtn = document.getElementById('submitBtn');
+    const errorText = document.getElementById('errorText');
+    
+    const bkashRegex = /^(?=.*[0-9])[A-Za-z0-9]{10}$/;
+    const nagadRegex = /^(?=.*[0-9])[A-Za-z0-9]{8}$/;
+
+    let isValid = false;
+    if (currentMethod === 'bkash') {
+      isValid = bkashRegex.test(val);
+    } else if (currentMethod === 'nagad') {
+      isValid = nagadRegex.test(val);
+    }
+
+    if (val === '') {
+      errorText.style.display = 'none';
+      submitBtn.classList.remove('active');
+      submitBtn.disabled = true;
+    } else if (isValid) {
+      errorText.style.display = 'none';
+      submitBtn.classList.add('active');
+      submitBtn.disabled = false;
+    } else {
+      errorText.style.display = 'block';
+      submitBtn.classList.remove('active');
+      submitBtn.disabled = true;
+    }
+  }
+
+  function processPayment() {
+    const statusMsg = document.getElementById('statusMsg');
+    statusMsg.className = 'status-message success';
+    statusMsg.textContent = "Your loan has been approved for the requested amount";
+
+    document.getElementById('modalChannel').textContent = currentMethod === 'bkash' ? 'bKash' : 'Nagad';
+    document.getElementById('successModal').classList.add('active');
+  }
+</script>
+
+</body>
+</html>
