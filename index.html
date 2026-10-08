@@ -1,650 +1,340 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en" class="dark">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ক্যাশ আউট — চেকআউট</title>
-<style>
-  :root {
-    --bg-color: #f4f5f7;
-    --card-bg: #ffffff;
-    --text-main: #333333;
-    --border-color: #e0e0e0;
-    --btn-disabled: #d6d6d6;
-    --btn-disabled-text: #ffffff;
-    --badge-bg: #fff1f0;
-    --badge-text: #e53935;
-    
-    /* Header Fixed Color */
-    --top-header-bg: #1b7a3e;
-
-    /* Payment Brand Colors */
-    --bkash-color: #e2136e;
-    --nagad-color: #f7921e;
-    --active-theme: var(--bkash-color);
-  }
-
-  * { box-sizing: border-box; }
-
-  body {
-    margin: 0;
-    font-family: "Segoe UI", "Noto Sans Bengali", Arial, sans-serif;
-    background-color: var(--bg-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 0 0 40px 0;
-    color: var(--text-main);
-    min-height: 100vh;
-  }
-
-  /* Responsive Top Header */
-  .top-header {
-    width: 100%;
-    max-width: 480px;
-    background-color: var(--top-header-bg);
-    color: #ffffff;
-    text-align: center;
-    padding: 24px 16px 20px 16px;
-    border-bottom-left-radius: 20px;
-    border-bottom-right-radius: 20px;
-    transition: all 0.3s ease;
-  }
-
-  .top-header .order-id {
-    font-size: 15px;
-    font-weight: 500;
-    opacity: 0.95;
-    margin-bottom: 6px;
-  }
-
-  .top-header .order-amount {
-    font-size: 32px;
-    font-weight: 700;
-  }
-
-  /* Main Container */
-  .container {
-    width: 100%;
-    max-width: 480px;
-    padding: 16px;
-  }
-
-  /* Card */
-  .card {
-    background: var(--card-bg);
-    border-radius: 16px;
-    padding: 20px;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-    margin-bottom: 16px;
-  }
-
-  .card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-  }
-
-  .card-header h2 {
-    font-size: 16px;
-    margin: 0;
-    font-weight: 600;
-    color: #444;
-  }
-
-  .lang-switch {
-    font-size: 12px;
-    background: #f0f0f0;
-    padding: 4px 10px;
-    border-radius: 12px;
-    color: #666;
-  }
-
-  /* Dropdown Selector */
-  .select-box {
-    position: relative;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    background: #fff;
-    cursor: pointer;
-    user-select: none;
-  }
-
-  .select-current {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 14px;
-  }
-
-  .method-info {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .radio-icon {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    border: 5px solid var(--active-theme);
-    background: #fff;
-    transition: border-color 0.3s ease;
-  }
-
-  .dropdown-arrow {
-    font-size: 12px;
-    color: #777;
-    transition: transform 0.2s ease;
-  }
-
-  .select-box.open .dropdown-arrow {
-    transform: rotate(180deg);
-  }
-
-  .select-options {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    right: 0;
-    background: #fff;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    margin-top: 4px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    z-index: 10;
-    overflow: hidden;
-  }
-
-  .select-box.open .select-options {
-    display: block;
-  }
-
-  .option-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 12px 14px;
-    transition: background 0.2s;
-  }
-
-  .option-item:hover {
-    background: #f9f9f9;
-  }
-
-  /* Steps Section */
-  .sub-heading-row {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin: 18px 0 14px 0;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-
-  .sub-title {
-    font-size: 14px;
-    font-weight: 700;
-    color: #222;
-  }
-
-  .info-badge {
-    font-size: 12px;
-    color: var(--badge-text);
-    background: var(--badge-bg);
-    padding: 4px 10px;
-    border-radius: 12px;
-    text-decoration: none;
-  }
-
-  .step-item {
-    margin-bottom: 18px;
-  }
-
-  .step-header {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    margin-bottom: 8px;
-  }
-
-  .step-number {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 1px solid var(--active-theme);
-    color: var(--active-theme);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: bold;
-    flex-shrink: 0;
-    margin-top: 2px;
-    transition: all 0.3s ease;
-  }
-
-  .step-text {
-    font-size: 13.5px;
-    font-weight: 600;
-    color: #333;
-    line-height: 1.4;
-  }
-
-  /* Account Card */
-  .account-box {
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 10px 14px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #fff;
-    gap: 10px;
-  }
-
-  .account-details {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-
-  .wallet-icon {
-    width: 22px;
-    height: 22px;
-    opacity: 0.6;
-    flex-shrink: 0;
-  }
-
-  .account-num-wrap .label {
-    font-size: 11px;
-    color: #888;
-  }
-
-  .account-num-wrap .number {
-    font-size: 15px;
-    font-weight: 700;
-    color: #111;
-  }
-
-  .copy-btn {
-    background: var(--active-theme);
-    color: #fff;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    flex-shrink: 0;
-    transition: background 0.3s ease;
-  }
-
-  .hint-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #fdf2f2;
-    color: #e53935;
-    font-size: 12px;
-    padding: 6px 12px;
-    border-radius: 20px;
-    margin-top: 8px;
-  }
-
-  /* Input & Button */
-  .input-box {
-    width: 100%;
-    padding: 12px 14px;
-    border: 1.5px solid var(--border-color);
-    border-radius: 10px;
-    font-size: 14px;
-    outline: none;
-    color: #333;
-    margin-top: 6px;
-    transition: border-color 0.3s ease;
-  }
-
-  .input-box:focus {
-    border-color: var(--active-theme);
-  }
-
-  .error-text {
-    font-size: 12px;
-    color: #e53935;
-    margin-top: 4px;
-    display: none;
-    font-weight: 600;
-  }
-
-  .submit-btn {
-    width: 100%;
-    padding: 14px;
-    background: var(--btn-disabled);
-    color: var(--btn-disabled-text);
-    border: none;
-    border-radius: 10px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: not-allowed;
-    margin-top: 16px;
-    transition: background 0.3s ease;
-  }
-
-  .submit-btn.active {
-    background: var(--active-theme);
-    cursor: pointer;
-  }
-
-  .status-message {
-    margin-top: 14px;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: 600;
-    text-align: center;
-    display: none;
-  }
-
-  .status-message.success {
-    display: block;
-    background: #e8f5e9;
-    color: #2e7d32;
-    border: 1px solid #a5d6a7;
-  }
-
-  .footer-notice {
-    font-size: 11.5px;
-    color: #666;
-    text-align: left;
-    line-height: 1.6;
-    padding: 0 10px;
-  }
-
-  .footer-notice p {
-    margin: 6px 0;
-  }
-
-  /* Modal Styles */
-  .modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    opacity: 0;
-    visibility: hidden;
-    transition: all 0.3s ease;
-    padding: 16px;
-  }
-
-  .modal-overlay.active {
-    opacity: 1;
-    visibility: visible;
-  }
-
-  .modal-card {
-    background: #1b7a3e;
-    color: #ffffff;
-    width: 100%;
-    max-width: 400px;
-    border-radius: 16px;
-    padding: 28px 20px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-    transform: translateY(20px);
-    transition: transform 0.3s ease;
-  }
-
-  .modal-overlay.active .modal-card {
-    transform: translateY(0);
-  }
-
-  .success-icon-circle {
-    width: 50px;
-    height: 50px;
-    border: 2px solid #ffffff;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 16px auto;
-    font-size: 24px;
-  }
-
-  .modal-title {
-    font-size: 20px;
-    font-weight: 700;
-    margin-bottom: 12px;
-  }
-
-  .modal-desc {
-    font-size: 13px;
-    line-height: 1.5;
-    opacity: 0.95;
-    margin-bottom: 24px;
-  }
-
-  .modal-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 12px 0;
-    border-top: 1px solid rgba(255, 255, 255, 0.2);
-    font-size: 14px;
-  }
-
-  .modal-row-label {
-    opacity: 0.9;
-  }
-
-  .modal-row-value {
-    font-weight: 700;
-  }
-
-  @media (min-width: 600px) {
-    body {
-      padding-top: 40px;
-    }
-
-    .top-header {
-      border-radius: 20px 20px 0 0;
-    }
-
-    .card {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-    }
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOST // Neural Agent Ecosystem</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: '#0a0a0c',
+                        glass: 'rgba(255, 255, 255, 0.03)',
+                        glassBorder: 'rgba(255, 255, 255, 0.08)',
+                        ghostWhite: '#f1f1f4',
+                        ghostMuted: '#9494a0',
+                        ghostAccent: '#e2e2ed'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #070709;
+            color: #f1f1f4;
+            font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            overflow-x: hidden;
+        }
+        .glass-panel {
+            background: linear-gradient(145deg, rgba(20, 20, 25, 0.7), rgba(10, 10, 12, 0.8));
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .glow-text {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.25);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #0a0a0c; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.3); }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col antialiased">
 
-  <!-- Fixed Top Header -->
-  <div class="top-header" id="topHeader">
-    <div class="order-id">অর্ডার আইডি: 939364039567574748</div>
-    <div class="order-amount">৳ 6,300.00</div>
-  </div>
-
-  <div class="container">
-    <div class="card">
-      <div class="card-header">
-        <h2>পক্যাশ আউট চ্যানেল</h2>
-        <span class="lang-switch">বাং | EN</span>
-      </div>
-
-      <!-- Payment Method Dropdown -->
-      <div class="select-box" id="paymentDropdown">
-        <div class="select-current" onclick="toggleDropdown()">
-          <div class="method-info">
-            <span class="radio-icon"></span>
-            <span class="method-name" id="selectedName">bKash</span>
-          </div>
-          <span class="dropdown-arrow">▼</span>
-        </div>
-        <div class="select-options">
-          <div class="option-item" onclick="selectMethod('bkash', 'bKash', '01849992657')">
-            <span class="method-name">bKash</span>
-          </div>
-          <div class="option-item" onclick="selectMethod('nagad', 'Nagad', '01849992657')">
-            <span class="method-name">Nagad</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="sub-heading-row">
-        <span class="sub-title">শুধু ২টি ধাপে, পেমেন্ট সম্পন্ন করুন।</span>
-        <a href="#" class="info-badge">বিস্তারিত ব্যাখ্যা &gt;</a>
-      </div>
-
-      <!-- Step 1 -->
-      <div class="step-item">
-        <div class="step-header">
-          <span class="step-number">1</span>
-          <span class="step-text" id="step1Text">এই bKash নাম্বার শুধুমাত্র ক্যাশ আউট গ্রহণ করা হয়</span>
-        </div>
-        
-        <div class="account-box">
-          <div class="account-details">
-            <svg class="wallet-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-            </svg>
-            <div class="account-num-wrap">
-              <div class="label">Wallet No*</div>
-              <div class="number" id="walletNumber">01755733800</div>
+    <!-- Top Navigation Header -->
+    <header class="glass-panel border-b border-white/10 px-6 py-3 flex items-center justify-between sticky top-0 z-50">
+        <div class="flex items-center space-x-4">
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-zinc-800 to-zinc-200 p-[1px] flex items-center justify-center shadow-lg">
+                <div class="w-full h-full bg-black rounded-full flex items-center justify-center">
+                    <i class="fa-solid fa-ghost text-white text-sm"></i>
+                </div>
             </div>
-          </div>
-          <button class="copy-btn" onclick="copyWallet()">কপি</button>
+            <div>
+                <h1 class="font-bold tracking-wider text-sm text-ghostWhite glow-text">GHOST // NEURAL ECOSYSTEM</h1>
+                <p class="text-[10px] text-ghostMuted tracking-widest uppercase">Active Core: GLM-5.7 HERETIC</p>
+            </div>
         </div>
 
-        <div class="hint-pill">
-          <span>'ক্যাশ আউট' দিয়ে পরিশোধ করুন</span>
+        <!-- Navigation Tabs -->
+        <nav class="hidden md:flex items-center space-x-1 glass-pill px-2 py-1 rounded-full text-xs">
+            <button onclick="switchTab('chat')" id="btn-chat" class="px-4 py-1.5 rounded-full bg-white text-black font-medium transition-all shadow">Terminal Hub</button>
+            <button onclick="switchTab('voice')" id="btn-voice" class="px-4 py-1.5 rounded-full text-ghostMuted hover:text-white transition-all">Voice & Acoustics</button>
+            <button onclick="switchTab('telemetry')" id="btn-telemetry" class="px-4 py-1.5 rounded-full text-ghostMuted hover:text-white transition-all">Telemetry Pulse</button>
+            <button onclick="switchTab('nodes')" id="btn-nodes" class="px-4 py-1.5 rounded-full text-ghostMuted hover:text-white transition-all">Node Workflows</button>
+            <button onclick="switchTab('memory')" id="btn-memory" class="px-4 py-1.5 rounded-full text-ghostMuted hover:text-white transition-all">Memory Cluster</button>
+        </nav>
+
+        <!-- System Status Badges -->
+        <div class="flex items-center space-x-3 text-xs">
+            <div class="glass-pill px-3 py-1 rounded-full flex items-center space-x-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span class="text-ghostMuted">VRAM:</span>
+                <span class="font-mono text-white">7.4 / 8.0 GB</span>
+            </div>
         </div>
-      </div>
+    </header>
 
-      <!-- Step 2 -->
-      <div class="step-item">
-        <div class="step-header">
-          <span class="step-number">2</span>
-          <span class="step-text">ক্যাশ আউট TrxID নাম্বার লিখুন (প্রয়োজন)</span>
-        </div>
+    <!-- Main Workspace Area -->
+    <main class="flex-1 p-6 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-4 gap-6">
 
-        <input type="text" id="trxInput" class="input-box" placeholder="TrxID অবশ্যই প্রদান করতে হবে!" oninput="validateInput()">
-        <div id="errorText" class="error-text">ভুল TrxID! সঠিক TrxID প্রদান করুন।</div>
-        
-        <button id="submitBtn" class="submit-btn" disabled onclick="processPayment()">জমা দিন</button>
-        
-        <div id="statusMsg" class="status-message"></div>
-      </div>
-    </div>
+        <!-- Left Sidebar: Configurations & Quick Switchers -->
+        <aside class="lg:col-span-1 space-y-5">
+            <!-- Agent Config Card -->
+            <div class="glass-panel p-5 rounded-2xl space-y-4">
+                <h2 class="text-xs font-semibold tracking-wider uppercase text-ghostMuted flex items-center justify-between">
+                    <span>Agent Configuration</span>
+                    <i class="fa-solid fa-sliders text-[10px]"></i>
+                </h2>
+                
+                <div class="space-y-3 text-xs">
+                    <div class="glass-pill p-3 rounded-xl flex items-center justify-between">
+                        <span class="text-ghostMuted">Active Mode</span>
+                        <span class="font-mono text-white">HERETIC v5.7</span>
+                    </div>
+                    <div class="glass-pill p-3 rounded-xl flex items-center justify-between">
+                        <span class="text-ghostMuted">Memory Cache</span>
+                        <span class="font-mono text-emerald-400">Optimized</span>
+                    </div>
+                    <div class="glass-pill p-3 rounded-xl flex items-center justify-between">
+                        <span class="text-ghostMuted">Backend Bridge</span>
+                        <span id="backend-status" class="font-mono text-amber-400">Connecting...</span>
+                    </div>
+                </div>
+            </div>
 
-    <div class="footer-notice">
-      <p>ক্যাশ আউট সম্পন্ন করার পর প্রাপ্ত ট্রানজেকশন আইডি সঠিকভাবে উপরের ফর্মে লিখুন।</p>
-      <p>জমাকৃত তথ্য পর্যালোচনার পর যাচাই করা হবে। যাচাই সম্পন্ন না হওয়া পর্যন্ত এটি "পর্যালোচনাধীন" হিসেবে দেখানো হবে।</p>
-      <p>ভুল তথ্য প্রদান করলে যাচাই প্রক্রিয়া বিলম্বিত হতে পারে।</p>
-    </div>
-  </div>
+            <!-- Vibe & Persona Selector -->
+            <div class="glass-panel p-5 rounded-2xl space-y-4">
+                <h2 class="text-xs font-semibold tracking-wider uppercase text-ghostMuted">Persona Vibe Matrix</h2>
+                <div class="grid grid-cols-2 gap-2 text-xs">
+                    <button onclick="setVibe('STRATEGIST')" class="p-2.5 rounded-xl bg-white/10 text-white font-medium hover:bg-white/20 transition-all text-left border border-white/10">Strategist</button>
+                    <button onclick="setVibe('STEPMOM')" class="p-2.5 rounded-xl glass-pill text-ghostMuted hover:text-white transition-all text-left">Stepmom</button>
+                    <button onclick="setVibe('UNFILTERED')" class="p-2.5 rounded-xl glass-pill text-ghostMuted hover:text-white transition-all text-left">Unfiltered</button>
+                    <button onclick="setVibe('GHOST')" class="p-2.5 rounded-xl glass-pill text-ghostMuted hover:text-white transition-all text-left">Ghost Void</button>
+                </div>
+            </div>
+        </aside>
 
-  <!-- Confirmation Modal -->
-  <div class="modal-overlay" id="successModal">
-    <div class="modal-card">
-      <div class="success-icon-circle">✓</div>
-      <div class="modal-title">পেমেন্ট সফল হয়েছে</div>
-      <div class="modal-desc">
-        আপনি পেমেন্ট সম্পন্ন করেছেন, অনুগ্রহ করে আবার বিক্রেতার কাছে ফিরে গিয়ে নিশ্চিত করুন।
-      </div>
-      <div class="modal-row">
-        <span class="modal-row-label">পযাশ আউট পরিমাণ</span>
-        <span class="modal-row-value">৳   6,300.00</span>
-      </div>
-      <div class="modal-row">
-        <span class="modal-row-label">পেমেন্ট চ্যানেল</span>
-        <span class="modal-row-value" id="modalChannel">bKash</span>
-      </div>
-    </div>
-  </div>
+        <!-- Center Workspace: Tab Views -->
+        <section class="lg:col-span-3 space-y-6">
 
-<script>
-  let currentMethod = 'bkash';
+            <!-- TAB 1: TERMINAL & CHAT HUB -->
+            <div id="tab-chat" class="space-y-4">
+                <div class="glass-panel rounded-2xl h-[550px] flex flex-col overflow-hidden">
+                    <!-- Chat Header -->
+                    <div class="p-4 border-b border-white/10 flex items-center justify-between bg-white/[0.02]">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center">
+                                <i class="fa-solid fa-terminal text-xs"></i>
+                            </div>
+                            <span class="text-xs font-mono tracking-wider">HERETIC_CONSOLE_v5.7</span>
+                        </div>
+                        <div class="text-[11px] text-ghostMuted font-mono">ENCRYPTION: SECURE LOCAL</div>
+                    </div>
 
-  function toggleDropdown() {
-    document.getElementById('paymentDropdown').classList.toggle('open');
-  }
+                    <!-- Chat Messages Stream -->
+                    <div id="chat-messages" class="flex-1 p-5 overflow-y-auto space-y-4 text-sm font-mono">
+                        <div class="flex items-start space-x-3">
+                            <div class="w-6 h-6 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs mt-0.5">G</div>
+                            <div class="glass-pill p-3.5 rounded-2xl max-w-xl text-ghostWhite">
+                                [SYSTEM INITIALIZED] GHOST neural framework online. All models loaded into local VRAM. Select a vibe or voice profile to begin execution.
+                            </div>
+                        </div>
+                    </div>
 
-  function selectMethod(method, name, number) {
-    currentMethod = method;
-    document.getElementById('selectedName').textContent = name;
-    document.getElementById('walletNumber').textContent = number;
-    document.getElementById('step1Text').textContent = `এই ${name} নাম্বার শুধুমাত্র সেন্ড মানি গ্রহণ করা হয়`;
-    document.getElementById('paymentDropdown').classList.remove('open');
-    
-    // Switch Theme Color
-    const root = document.documentElement;
-    if (method === 'bkash') {
-      root.style.setProperty('--active-theme', 'var(--bkash-color)');
-    } else if (method === 'nagad') {
-      root.style.setProperty('--active-theme', 'var(--nagad-color)');
-    }
+                    <!-- Input Bar -->
+                    <div class="p-4 border-t border-white/10 bg-black/40">
+                        <form id="chat-form" onsubmit="handleChatSubmit(event)" class="flex items-center space-x-3">
+                            <input type="text" id="chat-input" placeholder="Type prompt or command for GHOST..." class="flex-1 glass-pill px-4 py-3 rounded-xl text-sm focus:outline-none focus:border-white/30 text-white placeholder-ghostMuted">
+                            <button type="submit" class="px-5 py-3 rounded-xl bg-white text-black font-medium hover:bg-zinc-200 transition-all text-sm flex items-center space-x-2">
+                                <span>Execute</span>
+                                <i class="fa-solid fa-arrow-right text-xs"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-    // Reset input & status
-    document.getElementById('trxInput').value = '';
-    document.getElementById('errorText').style.display = 'none';
-    document.getElementById('statusMsg').className = 'status-message';
-    validateInput();
-  }
+            <!-- TAB 2: VOICE & ACOUSTICS SUITE -->
+            <div id="tab-voice" class="hidden space-y-4">
+                <div class="glass-panel p-6 rounded-2xl space-y-6">
+                    <h2 class="text-sm font-semibold tracking-wider uppercase text-ghostWhite">Bengali & Multi-Voice Synthesizer Bay</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                        <div onclick="selectVoice('Mariam')" id="voice-Mariam" class="glass-pill p-4 rounded-xl cursor-pointer border border-white/20 transition-all">
+                            <div class="font-bold text-white mb-1">Mariam (50yo Mom)</div>
+                            <div class="text-ghostMuted">Deep, calm, realistic tone with warm inflection.</div>
+                        </div>
+                        <div onclick="selectVoice('Stepmom')" id="voice-Stepmom" class="glass-pill p-4 rounded-xl cursor-pointer hover:border-white/20 transition-all">
+                            <div class="font-bold text-white mb-1">Stepmom (Intimate)</div>
+                            <div class="text-ghostMuted">Soft, alluring, expressive pacing.</div>
+                        </div>
+                        <div onclick="selectVoice('Ghost')" id="voice-Ghost" class="glass-pill p-4 rounded-xl cursor-pointer hover:border-white/20 transition-all">
+                            <div class="font-bold text-white mb-1">Ghost Void</div>
+                            <div class="text-ghostMuted">Ethereal, deep reverb, cybernetic resonance.</div>
+                        </div>
+                    </div>
 
-  function copyWallet() {
-    const num = document.getElementById('walletNumber').textContent;
-    navigator.clipboard.writeText(num);
-    alert('কপি করা হয়েছে!');
-  }
+                    <!-- Acoustic Sliders -->
+                    <div class="space-y-4 pt-4 border-t border-white/10 text-xs">
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-ghostMuted">
+                                <span>Pitch Modulation</span>
+                                <span id="val-pitch" class="font-mono text-white">+0.4 Hz</span>
+                            </div>
+                            <input type="range" min="-5" max="5" step="0.1" value="0.4" oninput="updateSlider('pitch', this.value)" class="w-full accent-white bg-white/10 rounded-lg appearance-none h-1.5">
+                        </div>
+                        <div class="space-y-2">
+                            <div class="flex justify-between text-ghostMuted">
+                                <span>Speech Cadence (Tempo)</span>
+                                <span id="val-cadence" class="font-mono text-white">1.05x</span>
+                            </div>
+                            <input type="range" min="0.5" max="2.0" step="0.05" value="1.05" oninput="updateSlider('cadence', this.value)" class="w-full accent-white bg-white/10 rounded-lg appearance-none h-1.5">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-  function validateInput() {
-    const val = document.getElementById('trxInput').value.trim();
-    const submitBtn = document.getElementById('submitBtn');
-    const errorText = document.getElementById('errorText');
-    
-    const bkashRegex = /^(?=.*[0-9])[A-Za-z0-9]{10}$/;
-    const nagadRegex = /^(?=.*[0-9])[A-Za-z0-9]{8}$/;
+            <!-- TAB 3: TELEMETRY & PULSE -->
+            <div id="tab-telemetry" class="hidden space-y-4">
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <h2 class="text-sm font-semibold tracking-wider uppercase text-ghostWhite">Real-Time Cognitive Telemetry</h2>
+                    <div class="h-40 glass-pill rounded-xl flex items-center justify-center p-4">
+                        <div class="w-full h-full flex items-end space-x-1 justify-between" id="oscilloscope-bars">
+                            <!-- Live generated bars via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    let isValid = false;
-    if (currentMethod === 'bkash') {
-      isValid = bkashRegex.test(val);
-    } else if (currentMethod === 'nagad') {
-      isValid = nagadRegex.test(val);
-    }
+            <!-- TAB 4: NODE WORKFLOWS -->
+            <div id="tab-nodes" class="hidden space-y-4">
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <h2 class="text-sm font-semibold tracking-wider uppercase text-ghostWhite">Node-Based Pipeline Graph</h2>
+                    <div class="h-64 glass-pill rounded-xl flex items-center justify-center text-ghostMuted font-mono text-xs">
+                        [DRAG & DROP PIPELINE: Local LLM Input $\rightarrow$ Router $\rightarrow$ Terminal Execution]
+                    </div>
+                </div>
+            </div>
 
-    if (val === '') {
-      errorText.style.display = 'none';
-      submitBtn.classList.remove('active');
-      submitBtn.disabled = true;
-    } else if (isValid) {
-      errorText.style.display = 'none';
-      submitBtn.classList.add('active');
-      submitBtn.disabled = false;
-    } else {
-      errorText.style.display = 'block';
-      submitBtn.classList.remove('active');
-      submitBtn.disabled = true;
-    }
-  }
+            <!-- TAB 5: MEMORY CLUSTER -->
+            <div id="tab-memory" class="hidden space-y-4">
+                <div class="glass-panel p-6 rounded-2xl space-y-4">
+                    <h2 class="text-sm font-semibold tracking-wider uppercase text-ghostWhite">Semantic Memory Cluster Inspector</h2>
+                    <div class="h-64 glass-pill rounded-xl flex items-center justify-center text-ghostMuted font-mono text-xs">
+                        [VECTOR EMBEDDING MAP: Active Weight Association Active]
+                    </div>
+                </div>
+            </div>
 
-  function processPayment() {
-    const statusMsg = document.getElementById('statusMsg');
-    statusMsg.className = 'status-message success';
-    statusMsg.textContent = "Your loan has been approved for the requested amount";
+        </section>
+    </main>
 
-    document.getElementById('modalChannel').textContent = currentMethod === 'bkash' ? 'bKash' : 'Nagad';
-    document.getElementById('successModal').classList.add('active');
-  }
-</script>
+    <script>
+        let currentVibe = "EXECUTIVE STRATEGIST";
+        let activeVoice = "Mariam";
 
+        function switchTab(tabId) {
+            ['chat', 'voice', 'telemetry', 'nodes', 'memory'].forEach(t => {
+                document.getElementById(`tab-${t}`).classList.add('hidden');
+                document.getElementById(`btn-${t}`).className = "px-4 py-1.5 rounded-full text-ghostMuted hover:text-white transition-all";
+            });
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+            document.getElementById(`btn-${tabId}`).className = "px-4 py-1.5 rounded-full bg-white text-black font-medium transition-all shadow";
+        }
+
+        function setVibe(vibe) {
+            currentVibe = vibe;
+            alert("Vibe switched to: " + vibe);
+        }
+
+        function selectVoice(voice) {
+            activeVoice = voice;
+            ['Mariam', 'Stepmom', 'Ghost'].forEach(v => {
+                let el = document.getElementById(`voice-${v}`);
+                if(el) el.className = "glass-pill p-4 rounded-xl cursor-pointer hover:border-white/25 transition-all";
+            });
+            let target = document.getElementById(`voice-${voice}`);
+            if(target) target.className = "glass-pill p-4 rounded-xl cursor-pointer border border-white/20 transition-all bg-white/5";
+        }
+
+        function updateSlider(type, val) {
+            document.getElementById(`val-${type}`).innerText = val + (type === 'cadence' ? 'x' : ' Hz');
+        }
+
+        async function handleChatSubmit(e) {
+            e.preventDefault();
+            const input = document.getElementById('chat-input');
+            const msg = input.value.trim();
+            if(!msg) return;
+
+            const container = document.getElementById('chat-messages');
+            
+            // Append User Message
+            container.innerHTML += `
+                <div class="flex items-start space-x-3 justify-end">
+                    <div class="glass-pill p-3.5 rounded-2xl max-w-xl text-white bg-white/10">${msg}</div>
+                </div>
+            `;
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Try connecting to local Python backend (`heretic_agent.py`)
+            try {
+                let res = await fetch('http://127.0.0.1:8000/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ message: msg, vibe: currentVibe, voice: activeVoice })
+                });
+                let data = await res.json();
+                
+                container.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs mt-0.5">G</div>
+                        <div class="glass-pill p-3.5 rounded-2xl max-w-xl text-ghostWhite">${data.response}</div>
+                    </div>
+                `;
+                document.getElementById('backend-status').innerText = "Connected";
+                document.getElementById('backend-status').className = "font-mono text-emerald-400";
+            } catch (err) {
+                // Fallback simulation if backend isn't running yet
+                container.innerHTML += `
+                    <div class="flex items-start space-x-3">
+                        <div class="w-6 h-6 rounded-full bg-white text-black font-bold flex items-center justify-center text-xs mt-0.5">G</div>
+                        <div class="glass-pill p-3.5 rounded-2xl max-w-xl text-ghostWhite">[HERETIC v5.7 - Mode: ${currentVibe} | Voice: ${activeVoice}] Processed query locally: "${msg}". (Start Python backend to enable live routing).</div>
+                    </div>
+                `;
+                document.getElementById('backend-status').innerText = "Offline (Simulated)";
+                document.getElementById('backend-status').className = "font-mono text-amber-400";
+            }
+            container.scrollTop = container.scrollHeight;
+        }
+
+        // Generate animated oscilloscope bars
+        const barsContainer = document.getElementById('oscilloscope-bars');
+        if(barsContainer) {
+            for(let i=0; i<32; i++) {
+                let bar = document.createElement('div');
+                bar.className = "w-1 bg-white/40 rounded-full transition-all duration-300";
+                bar.style.height = (Math.random() * 80 + 20) + '%';
+                barsContainer.appendChild(bar);
+            }
+            setInterval(() => {
+                Array.from(barsContainer.children).forEach(bar => {
+                    bar.style.height = (Math.random() * 80 + 15) + '%';
+                });
+            }, 300);
+        }
+    </script>
 </body>
 </html>
