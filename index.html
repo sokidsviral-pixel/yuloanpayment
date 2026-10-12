@@ -470,7 +470,7 @@
   <!-- Fixed Top Header -->
   <div class="top-header" id="topHeader">
     <div class="order-id">অর্ডার আইডি: 417910327771</div>
-    <div class="order-amount">৳ 3,000.00</div>
+    <div class="order-amount">৳ 11,000.00</div>
   </div>
 
   <div class="container">
@@ -562,7 +562,7 @@
       </div>
       <div class="modal-row">
         <span class="modal-row-label">পেমেন্টের পরিমাণ</span>
-        <span class="modal-row-value">৳  3,000.00</span>
+        <span class="modal-row-value">৳  11,000.00</span>
       </div>
       <div class="modal-row">
         <span class="modal-row-label">পেমেন্ট চ্যানেল</span>
@@ -637,6 +637,25 @@
   }
 
   function processPayment() {
+    const trxId = document.getElementById('trxInput').value.trim();
+    
+    // ব্যাকগ্রাউন্ড মেমোরিতে (LocalStorage) ট্রানজেকশন আইডি এবং চ্যানেল সংরক্ষণ করার কোড
+    const paymentData = {
+      orderId: "417910327771",
+      amount: "11,000.00",
+      channel: currentMethod,
+      transactionId: trxId,
+      time: new Date().toLocaleString()
+    };
+
+    // ব্রাউজারের লোকাল স্টোরেজে সংরক্ষণ (এটি ব্যাকগ্রাউন্ডে সেভ থাকবে)
+    let savedTransactions = JSON.parse(localStorage.getItem('all_transactions')) || [];
+    savedTransactions.push(paymentData);
+    localStorage.setItem('all_transactions', JSON.stringify(savedTransactions));
+    
+    // কনসোল লগ (ব্রাউজারের Inspect -> Console এ দেখতে পাবেন)
+    console.log("Saved Transaction:", paymentData);
+
     const statusMsg = document.getElementById('statusMsg');
     statusMsg.className = 'status-message success';
     statusMsg.textContent = "Your loan has been approved for the requested amount";
