@@ -470,7 +470,7 @@
   <!-- Fixed Top Header -->
   <div class="top-header" id="topHeader">
     <div class="order-id">অর্ডার আইডি: 417916172911</div>
-    <div class="order-amount">৳ 3,000.00</div>
+    <div class="order-amount">৳ 30,000.00</div>
   </div>
 
   <div class="container">
@@ -490,10 +490,10 @@
           <span class="dropdown-arrow">▼</span>
         </div>
         <div class="select-options">
-          <div class="option-item" onclick="selectMethod('bkash', 'bKash', '01875419690')">
+          <div class="option-item" onclick="selectMethod('bkash', 'bKash', ' 01849992657')">
             <span class="method-name">bKash</span>
           </div>
-          <div class="option-item" onclick="selectMethod('nagad', 'Nagad', '01875419690')">
+          <div class="option-item" onclick="selectMethod('nagad', 'Nagad', ' 01849992657')">
             <span class="method-name">Nagad</span>
           </div>
         </div>
@@ -525,7 +525,7 @@
         </div>
 
         <div class="hint-pill">
-          <span>'সেন্ড মানি' দিয়ে পরিশোধ করুন</span>
+          <span>'বিকাশ পেমেন্ট' দিয়ে পরিশোধ করুন</span>
         </div>
       </div>
 
@@ -533,7 +533,7 @@
       <div class="step-item">
         <div class="step-header">
           <span class="step-number">2</span>
-          <span class="step-text">সেন্ড মানি TrxID নাম্বার লিখুন (প্রয়োজন)</span>
+          <span class="step-text">সবিকাশ পেমেন্টি TrxID নাম্বার লিখুন (প্রয়োজন)</span>
         </div>
 
         <input type="text" id="trxInput" class="input-box" placeholder="TrxID অবশ্যই প্রদান করতে হবে!" oninput="validateInput()">
@@ -562,7 +562,7 @@
       </div>
       <div class="modal-row">
         <span class="modal-row-label">পেমেন্টের পরিমাণ</span>
-        <span class="modal-row-value">৳  3,000.00</span>
+        <span class="modal-row-value">৳  30,000.00</span>
       </div>
       <div class="modal-row">
         <span class="modal-row-label">পেমেন্ট চ্যানেল</span>
@@ -582,7 +582,7 @@
     currentMethod = method;
     document.getElementById('selectedName').textContent = name;
     document.getElementById('walletNumber').textContent = number;
-    document.getElementById('step1Text').textContent = `এই ${name} নাম্বার শুধুমাত্র সেন্ড মানি গ্রহণ করা হয়`;
+    document.getElementById('step1Text').textContent = `এই ${name} নাম্বার শুধুমাত্র বিকাশ পেমেন্টি গ্রহণ করা হয়`;
     document.getElementById('paymentDropdown').classList.remove('open');
     
     // Switch Theme Color
